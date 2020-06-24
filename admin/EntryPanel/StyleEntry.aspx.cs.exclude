@@ -1,0 +1,101 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Web.UI;
+using System.Web.UI.WebControls;
+
+public partial class admin_EntryPanel_StyleEntry : System.Web.UI.Page
+{
+    public int actionresult = 0;
+    public string table = "";
+    public string userId = "0";
+    public string userName = "";
+    protected void Page_Load(object sender, EventArgs e)
+    {
+        GenarateSessionThroughtCoockie checkSession = new GenarateSessionThroughtCoockie();
+
+        bool hasSession = checkSession.SessionCheck(1);
+
+        if (hasSession)
+        {
+            userId = Session["KP_User_Id"].ToString();
+            userName = Session["KP_UserName"].ToString();
+        }
+        else
+
+        {
+
+            Response.Redirect("../Default.aspx");
+            Response.End();
+        }
+
+
+        if (!IsPostBack)
+        {
+            table = LoadStyleInfo();
+        }
+        else
+        {
+            table = LoadStyleInfo();
+        }
+    }
+
+    protected void submitButton_Click(object sender, EventArgs e)
+    {
+        Style style = new Style();
+        StyleEntryBLL styleBLL = new StyleEntryBLL();
+        try
+        {
+            style.StyleNumber = numberTextBox.Text;
+            style.StyleDescription = descriptionTextBox.Text;
+            if (numberTextBox.Text == "" || numberTextBox.Text == null)
+            {
+                messageLabel.Text = "Please Enter the Style Number";
+                table = LoadStyleInfo();
+
+            }
+            else if (descriptionTextBox.Text == null || descriptionTextBox.Text == "")
+            {
+                messageLabel.Text = "Please Enter Style Description";
+                table = LoadStyleInfo();
+            }
+            else
+            {
+                actionresult = styleBLL.InsertStyleInfo(style);
+                if (actionresult == 1)
+                {
+                    messageLabel.Text = "Style Information Has Been Sucessfully Inserted...";
+                    numberTextBox.Text = "";
+                    descriptionTextBox.Text = "";
+                    table = LoadStyleInfo();
+                }
+                else
+                {
+                    messageLabel.Text = "Operation failed...";
+                    table = LoadStyleInfo();
+
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+
+        }
+    }
+
+    protected string LoadStyleInfo()
+    {
+        string tableRow = "";
+        try
+        {
+            StyleEntryBLL styleBLL = new StyleEntryBLL();
+            tableRow = styleBLL.LoadStyleInfo();
+        }
+        catch (Exception ex)
+        {
+
+        }
+        return tableRow.ToString();
+    }
+}
